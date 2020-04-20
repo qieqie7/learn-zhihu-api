@@ -9,15 +9,17 @@ class UsersCtl {
 
   async findById(ctx) {
     const { fields } = ctx.query;
-    const selectFields =
-      '+' +
-      fields.split(';').reduce((pre, current) => {
-        if (current && current !== 'password') {
-          pre += ' +' + current;
-        }
-        return pre;
-      }, []);
-    const user = await User.findById(ctx.params.id).select(selectFields);
+    const selectFields = fields.split(';').reduce((pre, current) => {
+      if (current && current !== 'password') {
+        pre += ' +' + current;
+      }
+      return pre;
+    }, []);
+    const user = await User.findById(ctx.params.id)
+      .select(selectFields)
+      .populate(
+        ' locations business employments.company employments.job educations.school educations.major',
+      );
     if (!user) {
       ctx.throw(404, '用户不存在');
     }

@@ -3,7 +3,12 @@ const Topic = require('../models/topic');
 
 class TopicCtl {
   async find(ctx) {
-    ctx.body = await Topic.find();
+    const { per_page = 10, q = '' } = ctx.query;
+    const page = Math.max(ctx.query.page * 1, 1);
+    const perPage = Math.max(per_page * 1, 1);
+    ctx.body = await Topic.find({ name: new RegExp(q) })
+      .limit(perPage)
+      .skip((page - 1) * perPage);
   }
 
   async findById(ctx) {
@@ -36,9 +41,14 @@ class TopicCtl {
       avatar_url: { type: 'string', required: false },
       introduction: { type: 'string', required: false },
     });
-    const topic = await Topic.findByIdAndUpdate(ctx.params, id, ctx.request.body);
+    const topic = await Topic.findByIdAndUpdate(ctx.params.id, ctx.request.body);
     ctx.body = topic;
   }
+
+  // async delete(ctx) {
+  //   await Topic.findByIdAndRemove(ctx.params.id);
+  //   ctx.status = 204;
+  // }
 }
 
 module.exports = new TopicCtl();

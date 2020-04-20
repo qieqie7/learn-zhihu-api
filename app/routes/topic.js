@@ -3,7 +3,7 @@ const jwt = require('koa-jwt');
 const { secret } = require('../config');
 const topicCtl = require('../controllers/topic');
 
-const router = new Router({ prefix: '/topic' });
+const router = new Router({ prefix: '/topics' });
 
 const auth = jwt({ secret });
 
